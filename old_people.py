@@ -7,7 +7,10 @@ Usage:
  python old_people.py
 """
 import os
+import sqlite3
+from pprint import pprint
 from create_db import db_path, script_dir
+import pandas as pd 
 
 def main():
     old_people_list = get_old_people()
@@ -24,6 +27,13 @@ def get_old_people():
     """
     # TODO: Create function body
     # Hint: See example code in lab instructions entitled "Getting People Data from the Database"
+    con = sqlite3.connect('social_network.db')
+    cur = con.cursor()
+    cur.execute('SELECT * FROM people')
+    all_people = cur.fetchall()
+    pprint(all_people)
+    con.commit()
+    con.close()
     return
 
 def print_name_and_age(name_and_age_list):
@@ -34,6 +44,9 @@ def print_name_and_age(name_and_age_list):
     """
     # TODO: Create function body
     # Hint: Use a for loop to iterate the list of tuples to print a sentence for each old person
+    df = pd.Dataframe(name_and_age_list)
+    for name_and_age_list in df.iterrows():
+        print("['name'] is ['age'] years old.")
     return
 
 def save_name_and_age_to_csv(name_and_age_list, csv_path):
@@ -45,6 +58,9 @@ def save_name_and_age_to_csv(name_and_age_list, csv_path):
     """
     # TODO: Create function body
     # Hint: In Lab 3, we converted a list of tuples into a pandas DataFrame and saved it to a CSV file
+    df = pd.read_csv(csv_path)
+    df.insert(columns=['Name', 'Age'], inplace=True)
+    df = pd.save(csv_path)
     return
 
 if __name__ == '__main__':
